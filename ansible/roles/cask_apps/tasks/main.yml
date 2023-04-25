@@ -76,3 +76,17 @@
     greedy: true
   tags:
     - [essential-apps, postman]
+
+- name: slack
+  community.general.homebrew_cask:
+    name: slack
+    greedy: true
+  tags:
+    - [essential-apps, slack]
+
+- name: zoom
+  community.general.homebrew_cask:
+    name: zoom
+    greedy: true
+  tags:
+    - [essential-apps, zoom]
