@@ -1,0 +1,16 @@
+---
+
+- name: bat mac
+  homebrew:
+    name: bat
+    state: latest
+  when: ansible_facts['os_family']|lower == 'darwin'
+  tags:
+    - bat
+
+- name: bat linux
+  shell:
+    cmd: "sudo dnf install -y bat"
+  when: ansible_facts['os_family']|lower == 'redhat'
+  tags:
+    - [bat]

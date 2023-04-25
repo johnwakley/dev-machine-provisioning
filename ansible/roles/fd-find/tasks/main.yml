@@ -1,0 +1,16 @@
+---
+
+- name: fd-find mac
+  homebrew:
+    name: fd
+    state: latest
+  when: ansible_facts['os_family']|lower == 'darwin'
+  tags:
+    - fd-find
+
+- name: Install fd-find linux
+  shell:
+    cmd: "sudo dnf install -y fd-find"
+  when: ansible_facts['os_family']|lower == 'redhat'
+  tags:
+    - [fd-find]

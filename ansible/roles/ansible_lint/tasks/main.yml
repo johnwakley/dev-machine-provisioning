@@ -1,0 +1,6 @@
+---
+
+- name: Install ansible-lint
+  shell: 'pip install ansible-lint=={{ ansible_lint_version }}'
+  changed_when: false
+  tags: [ansible-lint]

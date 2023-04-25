@@ -1,0 +1,43 @@
+---
+
+- name: Check current version
+  command: "{{ version_check_command }}"
+  register: current_version
+  ignore_errors: true
+  changed_when: false
+
+- name: Update check
+  when: current_version is failed or current_version.stdout is search('out of date') or current_version.stdout is not search(target_version)
+  set_fact:
+      update_required: true
+
+- name: Install new version
+  block:
+      - name: Download archive
+        get_url:
+            url: "{{ archive_url }}"
+            dest: "/tmp/{{ bin_name }}"
+      - name: Remove existing version
+        shell:
+            cmd: "sudo rm -f {{ install_path }}/{{ bin_name }}"
+      - name: Extract ZIP archive
+        shell:
+            cmd: "sudo unzip /tmp/{{ bin_name }} -d {{ install_path }}"
+        when: archive_type == "zip"
+      - name: Extract TAR ball
+        shell:
+            cmd: "sudo tar -C {{ install_path }} -xzf /tmp/{{ bin_name }}"
+        when: archive_type == "tar"
+      - name: Move bin to destination folder
+        shell:
+            cmd: "sudo sh -c 'chmod u+x /tmp/{{ bin_name }} && mv /tmp/{{ bin_name }} {{ install_path }}/{{ bin_name }}'"
+        when: archive_type == "bin"
+      - name: Extract DMG
+        shell:
+            cmd: "sudo sh -c 'hdiutil attach /tmp/{{ bin_name }} && cp /Volumes/{{ bin_name }}/{{ bin_name }} {{ install_path }} && hdiutil detach /Volumes/{{ bin_name }}'"
+        when: archive_type == "dmg"
+      - name: Extract .pkg
+        shell:
+            cmd: "sudo installer -pkg /tmp/{{ bin_name }} -target /"
+        when: archive_type == "pkg"
+  when: update_required is true

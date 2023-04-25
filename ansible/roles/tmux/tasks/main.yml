@@ -1,0 +1,29 @@
+---
+
+- name: Install tmux mac
+  homebrew:
+    name: tmux
+    state: latest
+  when: ansible_facts['os_family']|lower == 'darwin'
+  tags:
+    - tmux
+
+- name: Install tmuxp
+  shell:
+    cmd: "pip install --user tmuxp"
+  tags:
+    - tmux
+
+- name: Create tmuxp config folder
+  file:
+    path: "~/.config/tmuxp"
+    recurse: true
+    state: directory
+  tags:
+    - tmux
+
+- name: Copy tmuxp workspaces to config folder
+  shell:
+    cmd: 'cp {{ dotfile_path }}/tmux/*.yaml ~/.config/tmuxp'
+  tags:
+    - tmux

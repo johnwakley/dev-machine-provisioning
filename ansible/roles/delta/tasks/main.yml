@@ -1,0 +1,16 @@
+---
+
+- name: delta mac
+  homebrew:
+    name: git-delta
+    state: latest
+  when: ansible_facts['os_family']|lower == 'darwin'
+  tags:
+    - delta
+
+- name: delta linux
+  shell:
+    cmd: "sudo dnf install -y git-delta"
+  when: ansible_facts['os_family']|lower == 'redhat'
+  tags:
+    - [delta]

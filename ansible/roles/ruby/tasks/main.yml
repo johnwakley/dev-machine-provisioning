@@ -1,0 +1,33 @@
+---
+
+# https://github.com/rbenv/rbenv-installer#rbenv-installer
+- name: Install rbenv
+  shell:
+    cmd: "curl -fsSL https://github.com/rbenv/rbenv-installer/raw/HEAD/bin/rbenv-installer | sh"
+  tags: [ruby]
+
+- name: Install ruby version
+  command:
+    cmd: "rbenv install --skip-existing {{ ruby_version }}"
+    creates: "~/.rbenv/versions/{{ ruby_version }}"
+  tags: [ruby]
+
+- name: Set global ruby version
+  command:
+    cmd: "rbenv global {{ ruby_version }}"
+  changed_when: false
+  tags: [ruby]
+
+- name: Install bundler
+  gem:
+    name: bundler
+    state: present
+    version: "{{ bundler_version }}"
+  tags: [ruby]
+
+- name: Install cocoapods
+  shell:
+    cmd: "gem install cocoapods -v {{ cocoapods_version }} && rbenv rehash"
+    creates: "~/.gem/ruby/{{ cocoapods_version }}"
+  changed_when: false
+  tags: [ruby]

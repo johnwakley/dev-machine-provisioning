@@ -1,0 +1,55 @@
+---
+- name: Check current golang version
+  command: 'go version'
+  register: golang_version_result
+  ignore_errors: true
+  changed_when: false
+  tags: [golang]
+
+- name: Set should install golang flag
+  when: golang_version_result is failed or golang_version_result.stdout is not search(golang_version)
+  set_fact:
+      should_install_golang: true
+  tags: [golang]
+
+- name: Install golang
+  block:
+      - name: Download golang archive
+        get_url:
+            url: "{{ golang_archive }}"
+            dest: "/tmp/golang"
+      - name: Remove existing golang version
+        file:
+            path: /usr/local/go
+            state: absent
+      - name: Extract golang archive
+        shell:
+            cmd: 'sudo tar -C /usr/local -xzf /tmp/golang'
+        become: true
+        become_user: root
+  when: should_install_golang is true
+  tags: [golang]
+
+# golangci-lint
+# https://golangci-lint.run/usage/install/
+
+- name: Check golangci-lint version
+  shell: "$(go env GOPATH)/bin/golangci-lint --version"
+  register: golangci_lint_version_result
+  ignore_errors: true
+  changed_when: false
+  tags: [golang]
+
+- name: Set should install golangci-lint flag
+  when: golangci_lint_version_result is failed or golangci_lint_version_result.stdout is not search('version ' + golangci_lint_version)
+  set_fact:
+      should_install_golangci_lint: true
+  tags: [golang]
+
+# https://golangci-lint.run/usage/install/#ci-installation
+- name: Install golangci-lint
+  when: should_install_golangci_lint is true
+  shell:
+      cmd: "curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v{{ golangci_lint_version }}"
+  changed_when: false
+  tags: [golang]

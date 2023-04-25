@@ -1,0 +1,22 @@
+---
+
+- name: Install VSCode mac
+  community.general.homebrew_cask:
+    name: visual-studio-code
+    greedy: true
+  when: ansible_facts['os_family']|lower == 'darwin'
+  tags:
+    - [vscode]
+
+- name: Install VSCode linux
+  shell: |
+    sudo rpm --import https://packages.microsoft.com/keys/microsoft.asc
+
+    sudo sh -c 'echo -e "[code]\nname=Visual Studio Code\nbaseurl=https://packages.microsoft.com/yumrepos/vscode\nenabled=1\ngpgcheck=1\ngpgkey=https://packages.microsoft.com/keys/microsoft.asc" > /etc/yum.repos.d/vscode.repo'
+
+    dnf check-update
+
+    sudo dnf install -y code
+  when: ansible_facts['os_family']|lower == 'redhat'
+  tags:
+    - [vscode]

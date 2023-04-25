@@ -1,0 +1,47 @@
+---
+
+#
+# python and pyenv should have been previously installed from bootstrap-mac.sh
+#
+- name: Check operating system
+  shell: uname
+  ignore_errors: true
+  changed_when: false
+  register: uname_result
+  tags: [python]
+
+- name: Check current python version
+  command: 'python --version'
+  register: python_version_result
+  ignore_errors: true
+  changed_when: false
+  tags: [python]
+
+- name: Set should install python flag
+  when: python_version_result is failed or python_version_result.stdout is not search(python_version)
+  set_fact:
+      should_install_python: true
+  tags: [python]
+
+- name: Update python
+  block:
+      # Homebrew only available on mac
+      - name: Update pyenv
+        homebrew:
+            name: pyenv
+            state: present
+            update_homebrew: true
+        when: uname_result.stdout == 'Darwin'
+      - name: Install python version
+        command:
+            cmd: "pyenv install {{ python_version }}"
+            creates: "~/.pyenv/versions/{{ python_version }}"
+      - name: Set global python version
+        command:
+            cmd: "pyenv global {{ python_version }}"
+        changed_when: false
+      - name: Install ansible prompt
+        debug:
+            msg: "** Manually install ansible ** -- 'pip install ansible'"
+  when: should_install_python is true
+  tags: [python]

@@ -1,0 +1,28 @@
+---
+
+- name: fzf mac
+  homebrew:
+    name: fzf
+    state: latest
+  when: ansible_facts['os_family']|lower == 'darwin'
+  tags:
+    - fzf
+
+- name: Install useful key bindings and fuzzy completions (mac)
+  shell:
+    cmd: "$(brew --prefix)/opt/fzf/install"
+  changed_when: false
+  when: ansible_facts['os_family']|lower == 'darwin'
+  tags:
+    - fzf
+
+- name: Install fzf linux
+  shell: |
+    set -o pipefail
+
+    git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
+
+    yes | ~/.fzf/install
+  when: ansible_facts['os_family']|lower == 'redhat'
+  tags:
+    - fzf

@@ -1,0 +1,16 @@
+---
+
+- name: Install sqlite (mac)
+  homebrew:
+    name: sqlite
+    state: present
+  when: ansible_facts['os_family']|lower == 'darwin'
+  tags:
+    - [sqlite]
+
+- name: Install sqlite (linux)
+  shell:
+    cmd: "sudo dnf install -y sqlite"
+  when: ansible_facts['os_family']|lower == 'redhat'
+  tags:
+    - [sqlite]

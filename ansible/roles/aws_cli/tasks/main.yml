@@ -1,0 +1,7 @@
+---
+
+- name: Install AWS CLI
+  shell:
+    cmd: sudo ./aws/install
+  when: ansible_facts['os_family']|lower == 'redhat'
+  tags: [aws]

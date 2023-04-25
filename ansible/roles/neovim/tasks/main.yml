@@ -1,0 +1,67 @@
+---
+
+- name: Prepare vim config folders
+  shell:
+    cmd: "sudo mkdir -p ~/.vim ~/.vim/autoload ~/.vim/backup ~/.vim/colors ~/.vim/plugged ~/.config/nvim"
+  tags:
+    - neovim
+
+# https://neovim.io/doc/user/nvim.html#nvim-from-vim
+- name: Prepare transition to nvim from vim
+  shell:
+    cmd: "sudo cp ~/development/dotfiles/init.vim ~/.config/nvim"
+  tags:
+    - neovim
+
+- name: Enable permissions on .vim config folder
+  shell:
+    cmd: "sudo chown -R $USER ~/.vim/"
+  tags:
+    - neovim
+
+- name: Install neovim mac
+  homebrew:
+    name: neovim
+    state: present
+  when: ansible_facts['os_family']|lower == 'darwin'
+  tags:
+    - neovim
+
+- name: Install neovim linux
+  shell:
+    cmd: "dnf install -y neovim python3-neovim"
+  become: true
+  become_user: root
+  when: ansible_facts['os_family']|lower == 'redhat'
+  tags:
+    - neovim
+
+- name: vim-plug install for vim
+  shell:
+    cmd: "sudo curl -fLo ~/.vim/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim"
+  tags:
+    - neovim
+
+- name: vim-plug install for neo-vim
+  shell:
+    cmd: sudo sh -c 'curl -fLo "${XDG_DATA_HOME:-$HOME/.local/share}"/nvim/site/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
+  tags:
+    - neovim
+
+- name: Checkout dotfiles
+  git:
+    repo: 'https://github.com/johnwakley/dotfiles'
+    dest: "{{ dotfile_path }}"
+    update: false
+  tags:
+    - neovim
+
+- name: Copy .vimrc to ~
+  shell:
+    cmd: 'sudo cp {{ dotfile_path }}/.vimrc ~'
+  tags:
+    - neovim
+
+# Post-install:
+# - Run :PlugInstall in nvim to install plug-ins listed in .vimrc
+# - Copy color themes: cp ~/.vim/plugged/vim-one/colors/one.vim ~/.vim/colors

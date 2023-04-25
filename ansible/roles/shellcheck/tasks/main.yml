@@ -1,0 +1,14 @@
+---
+
+- name: Install shellcheck mac
+  homebrew:
+    name: shellcheck
+    state: present
+  when: ansible_facts['os_family']|lower == 'darwin'
+  tags: [shellcheck]
+
+- name: Install shellcheck linux
+  shell:
+    cmd: "sudo dnf install -y ShellCheck"
+  when: ansible_facts['os_family']|lower == 'redhat'
+  tags: [shellcheck]

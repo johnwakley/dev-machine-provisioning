@@ -1,0 +1,22 @@
+---
+
+- name: Install tree
+  homebrew:
+    name: tree
+    state: present
+  tags:
+    - tree
+
+- name: Install graphviz
+  homebrew:
+    name: graphviz
+    state: present
+  tags:
+    - graphviz
+
+- name: Install ffmpeg
+  homebrew:
+    name: ffmpeg
+    state: present
+  tags:
+    - ffmpeg

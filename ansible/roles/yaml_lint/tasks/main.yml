@@ -1,0 +1,6 @@
+---
+
+- name: Install yamllint
+  shell: 'pip install yamllint=={{ yamllint_version }}'
+  changed_when: false
+  tags: [yaml-lint]

@@ -1,0 +1,61 @@
+---
+
+- name: Install oh-my-zsh
+  shell:
+    cmd: 'sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"'
+    creates: ~/.oh-my-zsh
+  tags:
+    - oh-my-zsh
+
+- name: Create antigen config folder
+  file:
+    path: "~/development/antigen"
+    recurse: true
+    state: directory
+  tags:
+    - oh-my-zsh
+
+- name: Install antigen
+  shell:
+    cmd: 'curl -L git.io/antigen > ~/development/antigen/antigen.zsh'
+  tags:
+    - oh-my-zsh
+
+- name: Ensure the dotfiles repo exists
+  git:
+    repo: 'https://github.com/johnwakley/dotfiles.git'
+    dest: "{{ dotfile_path }}"
+    update: false
+  tags:
+    - oh-my-zsh
+
+- name: Copy .zshrc to ~/
+  copy:
+    src: "{{ dotfile_path }}/.zshrc"
+    dest: ~/.zshrc
+    mode: 'u=rw,g=r,o=r'
+  tags:
+    - oh-my-zsh
+
+- name: Install Starship
+  shell:
+    cmd: 'sh -c "$(curl -fsSL https://starship.rs/install.sh)" -y -f'
+  become: true
+  become_user: root
+  tags:
+    - oh-my-zsh
+
+
+- name: Create starship config folder
+  file:
+    path: "~/.config"
+    recurse: true
+    state: directory
+  tags:
+    - oh-my-zsh
+
+- name: Copy starship config to ~
+  shell:
+    cmd: 'cp {{ dotfile_path }}/starship.toml ~/.config'
+  tags:
+    - oh-my-zsh

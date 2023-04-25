@@ -1,0 +1,78 @@
+---
+
+- name: Rectangle
+  community.general.homebrew_cask:
+    name: rectangle
+    greedy: true
+  tags:
+    - [essential-apps, rectangle]
+
+- name: Dash
+  community.general.homebrew_cask:
+    name: dash
+    greedy: true
+  tags:
+    - dash
+
+- name: Whatsapp
+  community.general.homebrew_cask:
+    name: whatsapp
+    greedy: true
+  tags:
+    - whatsapp
+
+- name: VLC
+  community.general.homebrew_cask:
+    name: VLC
+    greedy: true
+  tags:
+    - vlc
+
+- name: Kindle reader
+  community.general.homebrew_cask:
+    name: kindle
+    greedy: true
+  tags:
+    - kindle
+
+- name: Flipper
+  community.general.homebrew_cask:
+    name: flipper
+    greedy: true
+  tags:
+    - flipper
+
+- name: React Native Debugger
+  community.general.homebrew_cask:
+    name: react-native-debugger
+    greedy: true
+  tags:
+    - react-native-debugger
+
+- name: Docker Desktop
+  community.general.homebrew_cask:
+    name: docker
+    greedy: true
+  tags:
+    - [essential-apps, docker-desktop]
+
+- name: pgAdmin
+  community.general.homebrew_cask:
+    name: pgadmin4
+    greedy: true
+  tags:
+    - pgadmin
+
+- name: drawio
+  community.general.homebrew_cask:
+    name: drawio
+    greedy: true
+  tags:
+    - [essential-apps, drawio]
+
+- name: postman
+  community.general.homebrew_cask:
+    name: postman
+    greedy: true
+  tags:
+    - [essential-apps, postman]

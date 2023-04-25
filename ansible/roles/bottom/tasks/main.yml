@@ -1,0 +1,17 @@
+---
+
+- name: bottom mac
+  homebrew:
+    name: bottom
+    state: latest
+  when: ansible_facts['os_family']|lower == 'darwin'
+  tags:
+    - bottom
+
+- name: Install bottom linux
+  shell: |
+    sudo dnf copr enable atim/bottom -y
+    sudo dnf install bottom -y
+  when: ansible_facts['os_family']|lower == 'redhat'
+  tags:
+    - [bottom]

@@ -1,0 +1,16 @@
+---
+
+- name: ripgrep mac
+  homebrew:
+    name: ripgrep
+    state: latest
+  when: ansible_facts['os_family']|lower == 'darwin'
+  tags:
+    - ripgrep
+
+- name: ripgrep linux
+  shell:
+    cmd: "sudo dnf install -y ripgrep"
+  when: ansible_facts['os_family']|lower == 'redhat'
+  tags:
+    - [ripgrep]

@@ -1,0 +1,80 @@
+---
+
+#
+# After manually installing Android Studio, run the following tasks in the following tag order:
+# - android-jdk
+# - android-sdk
+# - android-avd
+#
+# N.B. follow these linux specific steps:
+# - https://developer.android.com/studio/install#linux
+# - After install:
+#   - Open Android Studio and click on More Actions -> SDK Manager from the splash screen
+#   - Select SDK Tools tab and check Android SDK Command-line Tools
+#
+- name: Manual Android Studio Install Required!
+  debug:
+    msg: "MANUAL ANDROID STUDIO INSTALL REQUIRED!!"
+  tags: [android]
+
+- name: Install OpenJDK mac
+  community.general.homebrew_cask:
+    name: "{{ open_jdk_package_name }}"
+    greedy: true
+  when: ansible_facts['os_family']|lower == 'darwin'
+  tags: [android]
+
+#
+# https://docs.fedoraproject.org/en-US/quick-docs/installing-java/
+# NB: After installing, switch to the desired version with: `sudo alternatives --config java`
+# - https://docs.fedoraproject.org/en-US/quick-docs/installing-java/#_switching_between_java_versions
+#
+- name: Install OpenJDK linux
+  shell:
+    cmd: sudo dnf install -y {{ open_jdk_package_name }}
+  when: ansible_facts['os_family']|lower == 'redhat'
+  tags: [android]
+
+- name: Install OpenJDK dev package linux
+  shell:
+    cmd: sudo dnf install -y {{ open_jdk_development_package_name }}
+  when: ansible_facts['os_family']|lower == 'redhat'
+  tags: [android]
+
+# https://developer.android.com/studio/install#64bit-libs
+- name: Install required android studio libraries (linux only)
+  shell:
+    cmd: sudo yum install -y zlib.i686 ncurses-libs.i686 bzip2-libs.i686
+  when: ansible_facts['os_family']|lower == 'redhat'
+  tags: [android]
+
+- name: Install android platform tools and system images
+  shell: |
+    set -o pipefail
+    yes | sdkmanager --install "platforms;{{ android_api_level }}" "system-images;{{ android_api_level }};google_apis;x86_64" "cmdline-tools;latest" "build-tools;{{ android_platform_tools_version }}"
+  timeout: 3600
+  tags: [android]
+
+#
+# Linux Ref:
+# - https://developer.android.com/studio/run/emulator-acceleration.html#vm-linux
+# - https://www.linuxtechi.com/how-to-install-kvm-on-fedora-step-by-step/
+#
+# For mac, follow the manual steps listed here:
+# https://developer.android.com/studio/run/emulator-acceleration.html#vm-mac
+#
+- name: Configure VM Acceleration on Linux
+  shell:
+    cmd: "sudo dnf install -y qemu-kvm libvirt virt-install bridge-utils virt-manager libvirt-devel virt-top libguestfs-tools guestfs-tools"
+  when: ansible_facts['os_family']|lower == 'redhat'
+  tags: [android]
+
+#
+# Note: To check which devices you can create from the command line, run `avdmanager list device`
+# Ref: https://gist.github.com/mrk-han/66ac1a724456cadf1c93f4218c6060ae
+#
+- name: Install avd
+  shell:
+    cmd: 'avdmanager --verbose create avd --force --name "generic_{{ android_api_level }}_emulator" --device "pixel" --package "system-images;{{ android_api_level }};google_apis;x86_64" --tag "google_apis" --abi "x86_64"'
+    creates: "~/.android/avd/generic_{{ android_api_level }}_emulator.avd"
+  tags: [android]

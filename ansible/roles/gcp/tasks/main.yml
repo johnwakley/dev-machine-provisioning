@@ -1,0 +1,14 @@
+---
+
+# https://cloud.google.com/sdk/docs/downloads-versioned-archives
+- name: Install and init Google Cloud SDK
+  block:
+    - name: Install Google Cloud SDK
+      shell: "{{ lookup('env','HOME') }}/google-cloud-sdk/install.sh --quiet"
+      changed_when: false
+      become: true
+      become_user: root
+      # Manually run after install:
+      # ~/google-cloud-sdk/install.sh
+      # ~/google-cloud-sdk/bin/gcloud init
+  tags: [gcp]

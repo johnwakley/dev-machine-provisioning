@@ -1,0 +1,38 @@
+---
+
+- name: Check current version
+  command: "protoc --version"
+  register: current_version
+  ignore_errors: true
+  changed_when: false
+  tags: [protobuf]
+
+- name: Update check
+  when: current_version is failed or current_version.stdout is not search(protoc_version)
+  set_fact:
+      update_required: true
+  tags: [protobuf]
+
+- name: Install new version
+  block:
+      - name: Remove existing tmp extraction
+        shell:
+            cmd: "sudo rm -rf /tmp/protoc"
+      - name: Download archive
+        get_url:
+            url: "{{ protoc_archive_url }}"
+            dest: "/tmp/"
+      - name: Remove existing version
+        shell:
+            cmd: "sudo rm -f /usr/local/bin/protoc"
+      - name: Remove supporting folder
+        shell:
+            cmd: "sudo rm -rf /usr/local/include/google/protobuf"
+      - name: Extract ZIP archive
+        command:
+            cmd: "unzip /tmp/protoc-{{ protoc_version }}*.zip -d /tmp/protoc/"
+      - name: Move bin to destination folder
+        shell:
+            cmd: "sudo sh -c 'chmod u+x /tmp/protoc/bin/protoc && mv /tmp/protoc/bin/protoc /usr/local/bin/protoc && mkdir -p /usr/local/include/google && mv /tmp/protoc/include/google/protobuf /usr/local/include/google'"
+  when: update_required is true
+  tags: [protobuf]

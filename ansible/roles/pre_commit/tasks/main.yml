@@ -1,0 +1,5 @@
+---
+
+- name: Install pre-commit
+  shell: '$(pyenv root)/shims/pip install pre-commit=={{ precommit_version }}'
+  tags: [pre-commit]

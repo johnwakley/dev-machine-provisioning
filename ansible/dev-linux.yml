@@ -1,0 +1,158 @@
+---
+- hosts: localhost
+  vars:
+    nodejs_version: "{{ lookup('env', 'NODEJS_VERSION') }}"
+    watchman_rpm: "{{ lookup('env', 'WATCHMAN_RPM') }}"
+    watchman_archive: "{{ lookup('env', 'WATCHMAN_ARCHIVE') }}"
+    dotfile_path: ~/development/dotfiles
+    open_jdk_package_name: "{{ lookup('env', 'OPEN_JDK_PACKAGE_NAME') }}"
+    open_jdk_development_package_name: "{{ lookup('env', 'OPEN_JDK_DEVELOPMENT_PACKAGE_NAME') }}"
+    android_api_level: "{{ lookup('env', 'ANDROID_API_LEVEL') }}"
+    android_platform_tools_version: "{{ lookup('env', 'ANDROID_PLATFORM_TOOLS_VERSION') }}"
+    ruby_version: "{{ lookup('env', 'RUBY_VERSION') }}"
+    bundler_version: "{{ lookup('env', 'BUNDLER_VERSION') }}"
+    cocoapods_version: "{{ lookup('env', 'COCOAPODS_VERSION') }}"
+    golang_version: "{{ lookup('env', 'GOLANG_VERSION') }}"
+    golang_archive: "{{ lookup('env', 'GOLANG_ARCHIVE') }}"
+    golangci_lint_version: "1.31.0"
+    terraform_version: "{{ lookup('env', 'TERRAFORM_VERSION') }}"
+    terraform_archive_url: "{{ lookup('env', 'TERRAFORM_ARCHIVE_URL') }}"
+    tflint_version: "{{ lookup('env', 'TFLINT_VERSION') }}"
+    tflint_archive_url: "{{ lookup('env', 'TFLINT_ARCHIVE_URL') }}"
+    python_version: "{{ lookup('env', 'PYTHON_VERSION') }}"
+    precommit_version: "{{ lookup('env', 'PRECOMMIT_VERSION') }}"
+    ansible_lint_version: "{{ lookup('env', 'ANSIBLE_LINT_VERSION') }}"
+    yamllint_version: "{{ lookup('env', 'YAMLLINT_VERSION') }}"
+    terragrunt_version: "{{ lookup('env', 'TERRAGRUNT_VERSION') }}"
+    terragrunt_archive_url: "{{ lookup('env', 'TERRAGRUNT_ARCHIVE_URL') }}"
+    cloud_nuke_version: "{{ lookup('env', 'CLOUD_NUKE_VERSION') }}"
+    cloud_nuke_archive_url: "{{ lookup('env', 'CLOUD_NUKE_ARCHIVE_URL') }}"
+    awscli_version: "{{ lookup('env', 'AWSCLI_VERSION') }}"
+    awscli_archive_url: "{{ lookup('env', 'AWSCLI_ARCHIVE_URL') }}"
+    google_cloud_sdk_version: "{{ lookup('env', 'GOOGLE_CLOUD_SDK_VERSION') }}"
+    google_cloud_sdk_archive_url: "{{ lookup('env', 'GOOGLE_CLOUD_SDK_ARCHIVE_URL') }}"
+    aws_vault_version: "{{ lookup('env', 'AWS_VAULT_VERSION') }}"
+    aws_vault_archive_url: "{{ lookup('env', 'AWS_VAULT_ARCHIVE_URL') }}"
+    buildifier_version: "{{ lookup('env', 'BUILDIFIER_VERSION') }}"
+    buildifier_archive_url: "{{ lookup('env', 'BUILDIFIER_ARCHIVE_URL') }}"
+    bazelisk_version: "{{ lookup('env', 'BAZELISK_VERSION') }}"
+    bazelisk_archive_url: "{{ lookup('env', 'BAZELISK_ARCHIVE_URL') }}"
+    protoc_version: "{{ lookup('env', 'PROTOC_VERSION') }}"
+    protoc_archive_url: "{{ lookup('env', 'PROTOC_ARCHIVE_URL') }}"
+    buf_version: "{{ lookup('env', 'BUF_VERSION') }}"
+    buf_archive_url: "{{ lookup('env', 'BUF_ARCHIVE_URL') }}"
+    buf_breaking_archive_url: "{{ lookup('env', 'BUF_BREAKING_ARCHIVE_URL') }}"
+    buf_lint_archive_url: "{{ lookup('env', 'BUF_LINT_ARCHIVE_URL') }}"
+  roles:
+    #
+    # Programming Languages
+    #
+    - nodejs
+    - golang
+    - rust
+    - ruby
+    #
+    # Shell
+    #
+    - fzf
+    - oh_my_zsh
+    - alacritty
+    - tmux
+    #
+    # CLI Tools
+    #
+    - ripgrep
+    - fd-find
+    - bottom
+    - bat
+    - delta
+    - yq
+    #
+    # IDEs
+    #
+    - vscode
+    - neovim
+    #
+    # Databases
+    #
+    - sqlite
+    #
+    # Containers
+    #
+    - docker
+    #
+    # AWS
+    #
+    - role: bin_fetcher
+      vars:
+        bin_name: "awscliv2.zip"
+        target_version: "{{ awscli_version }}"
+        version_check_command: "aws --version"
+        archive_url: "{{ awscli_archive_url }}"
+        install_path: "./"
+        archive_type: "zip"
+      tags: [aws]
+    - aws_cli
+    #
+    # Protobuf
+    #
+    - protoc
+    - role: bin_fetcher
+      vars:
+        bin_name: "protoc-gen-buf-check-breaking"
+        target_version: "{{ buf_version }}"
+        version_check_command: "buf --version"
+        archive_url: "{{ buf_breaking_archive_url }}"
+        install_path: "/usr/local/bin"
+        archive_type: "bin"
+      tags: [protobuf]
+    - role: bin_fetcher
+      vars:
+        bin_name: "protoc-gen-buf-check-lint"
+        target_version: "{{ buf_version }}"
+        version_check_command: "buf --version"
+        archive_url: "{{ buf_lint_archive_url }}"
+        install_path: "/usr/local/bin"
+        archive_type: "bin"
+      tags: [protobuf]
+    - role: bin_fetcher
+      vars:
+        bin_name: "buf"
+        target_version: "{{ buf_version }}"
+        version_check_command: "buf --version"
+        archive_url: "{{ buf_archive_url }}"
+        install_path: "/usr/local/bin"
+        archive_type: "bin"
+      tags: [protobuf]
+    #
+    # Bazel
+    #
+    - role: bin_fetcher
+      vars:
+        bin_name: "buildifier"
+        target_version: "{{ buildifier_version }}"
+        version_check_command: "buildifier --version"
+        archive_url: "{{ buildifier_archive_url }}"
+        install_path: "/usr/local/bin"
+        archive_type: "bin"
+      tags: [bazel]
+    - role: bin_fetcher
+      vars:
+        bin_name: "bazel"
+        target_version: "{{ bazelisk_version }}"
+        version_check_command: "bazel --version"
+        archive_url: "{{ bazelisk_archive_url }}"
+        install_path: "/usr/local/bin"
+        archive_type: "bin"
+      tags: [bazel]
+    #
+    # Android
+    #
+    - android
+    #
+    # Linters
+    #
+    - ansible_lint
+    - yaml_lint
+    - shellcheck
+    - pre_commit
